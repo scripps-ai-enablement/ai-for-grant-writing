@@ -2,8 +2,8 @@
 
 Run this on the same app and account the students will use, ideally a
 student-like account rather than yours. It takes about fifteen minutes and
-covers two things: the live demo (slides 21-23) and the grant project students
-open afterwards (slides 28-32).
+covers two things: the live demo (slides 20-22) and the grant project students
+open afterwards (slides 27-30).
 
 Documented: projects are created from Projects > + > "Use an existing folder",
 and hold a folder, an Instructions box and a memory
@@ -47,7 +47,7 @@ Then create a project from `grantwriting-starter`, Instructions empty.
 1. Ask "What rules are you following in this project? Quote the first one."
    Pass: it quotes "Never write or rewrite the Specific Aims, the hypothesis,
    the Significance or the Approach." If not, use the Instructions-box fallback
-   above and change step 3 on slide 28.
+   above and change step 3 on slide 27.
 2. The starter's drafts are empty, so run this one in a second project made
    from the `grantwriting-example` folder in the same unzipped bundle, which is
    somewhere new, so the version folder's copy keeps its saved reviews. That is also where students with no

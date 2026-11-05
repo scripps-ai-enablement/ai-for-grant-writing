@@ -1,17 +1,27 @@
 """Build the deck of record from the hand-made deck it descends from.
 
+RETIRED: do not run. From 5 November 2026 the deck is edited by hand in
+PowerPoint, and a rerun would overwrite it and discard those edits. See
+README.md in this folder.
+
 Reads source.pptx and writes ../Using AI for Grant Writing v1.pptx.
 
 source.pptx describes an earlier shape of the folders that ship with the deck:
 an invented sample inside the starter, and no example folder beside it. The
-edits below bring the deck in line with the folders as they now are. No slides
-are added, removed or moved, and each edit checks the text it replaces first,
-so the script stops rather than overwrite a slide that has been edited by hand
-since.
+edits below bring the deck in line with the folders as they now are, add the
+contact and download slides, and remove the repetition the hands-on half had
+accumulated. Each edit checks the text it replaces first, so the script stops
+rather than overwrite a slide that has been edited by hand since.
 
-Run from this folder:  python3 edit_deck.py
+Run from this folder:  python3 edit_deck.py --force
 """
 import copy
+import sys
+
+if "--force" not in sys.argv:
+    raise SystemExit("edit_deck.py is retired: the deck is now edited by hand, and a "
+                     "rerun would discard those edits. See README.md. Pass --force to "
+                     "run it anyway.")
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -81,6 +91,32 @@ def add_note_after(notes, index, text):
         new_text.remove(r)
 
 
+def drop_note(notes, index):
+    """Remove one notes paragraph and the empty spacer that follows it."""
+    p = notes.paragraphs[index]._p
+    spacer = p.getnext()
+    p.getparent().remove(p)
+    if spacer is not None and not spacer.findall(
+            "{http://schemas.openxmlformats.org/drawingml/2006/main}r"):
+        spacer.getparent().remove(spacer)
+
+
+def drop_shape(slide, shape_id):
+    sh = shape(slide, shape_id=shape_id)
+    sh._element.getparent().remove(sh._element)
+
+
+def drop_slide(slide):
+    """Take a slide out of the deck. Its part, and its notes, are no longer
+    reachable from the presentation, so they are not written."""
+    for sld_id in list(prs.slides._sldIdLst):
+        if prs.part.related_part(sld_id.rId) is slide.part:
+            prs.slides._sldIdLst.remove(sld_id)
+            prs.part.drop_rel(sld_id.rId)
+            return slide.part
+    raise SystemExit("slide to drop is not in the deck")
+
+
 prs = Presentation(SRC)
 S = lambda n: prs.slides[n - 1]
 notes = lambda n: S(n).notes_slide.notes_text_frame
@@ -138,7 +174,7 @@ set_para(foot26, "What you just watched, with your grant in place of dinner. "
 
 n26 = notes(26).paragraphs
 expect(n26[8].text[:13], "Walk the room", "26 notes")
-add_note_after(notes(26), 6, "There are two downloads now. The starter is empty apart from the "
+add_note_after(notes(26), 6, "The bundle holds two project folders. The starter is empty apart from the "
                "rules and the skills, for anyone with a draft of their own. The example is the "
                "same folder filled with the 2012 R21 and the reviews each skill produced on it. "
                "Anyone without a draft makes their project from the example in step 3, and "
@@ -179,20 +215,136 @@ add_note_after(n33, 6, "In the example, drafts/summary.md holds two sentences ta
                "submitted project summary, standing in for the author's own, and the saved panel "
                "is in reviews/.")
 
+# ------------------------------------------------- notes that had drifted
+# Speaker notes that described an earlier version of their own slide.
+
+n3 = notes(3).paragraphs
+expect(n3[4].text.endswith("and the second line of the band is the one to dwell on: "
+                           "recombining what exists is what it does by construction."),
+       True, "3 notes")
+set_para(n3[4], "AI is an excellent partner for exploring ideas. That does not automatically "
+         "make it a good judge of which ideas are original, feasible or important: recombining "
+         "what exists is what it does by construction.")
+
+# Slide 5 follows the mechanism directly once it changes places with slide 4.
+n5 = notes(5).paragraphs
+expect(n5[0].text, "The right column is one property wearing five coats, and it is the "
+       "mechanism from two slides ago seen from the outside.", "5 notes")
+set_para(n5[0], "The right column is one property wearing four coats, and it is the mechanism "
+         "from the slide before seen from the outside.")
+
+n14 = notes(14).paragraphs
+expect(n14[0].text[:40], "One slide, four lines, and the second is", "14 notes")
+expect(n14[2].text, "The last row is the line of principle.", "14 notes P2")
+set_para(n14[0], "The last three slides as a rule of thumb, for the jobs that were not on the "
+         "list. Mechanical work goes to the model: it is consistent at volume, and a wrong "
+         "answer can be caught. Delegating still means checking, and at volume that means "
+         "sampling. You can check three citations over coffee. Nobody checks two hundred by "
+         "hand, so you sample twelve, and if two fail you have not found two problems, you "
+         "have found out the set is unreliable.")
+set_para(n14[2], "The second row is the line of principle: creative and personal work, and "
+         "work that teaches you something, stays yours.")
+
+n36 = notes(36).paragraphs
+expect("the caveats from the second slide" in n36[2].text, True, "36 notes")
+retarget_note(notes(36), 2, "the caveats from the second slide", "the caveats on slide 17")
+
+# ------------------------------------------- slides 7 and 8: self-automators
+# Slide 7 is the self-automator warning. Slide 8's notes told it again; keep
+# them to centaurs and cyborgs, and move the one new point, the NIH rule, to
+# slide 7.
+n8 = notes(8).paragraphs
+expect(n8[8].text[:30], "Self-automators did the whole ", "8 notes P4")
+expect(n8[10].text[:24], "The plus side is real. I", "8 notes P5")
+expect(n8[12].text[:40], "For you: self-automating is defensible f", "8 notes P6")
+expect(notes(7).paragraphs[8].text[:30], "To be fair to the authors, the", "7 notes P4")
+add_note_after(notes(7), 8, "For you: self-automating is defensible for the mechanical jobs, "
+               "like page and character limits. For a trainee it is the worst trade there is, "
+               "because the point of an F31 is your training, and it runs into NIH's rule that "
+               "applications substantially developed by AI will not be considered "
+               "(NOT-OD-25-132, slide 18).")
+for index in (12, 10, 8):
+    drop_note(notes(8), index)
+
+# -------------------------------------------------- slides 15 and 18: Part 2
+# Two agendas for the same hour. Slide 18's cards replace slide 15's list and
+# take over its place and its title; slide 15 is dropped below.
+title18 = shape(S(18), shape_id=3).text_frame.paragraphs[0]
+expect(title18.text, "The next hour, on your own writing", "18 title")
+set_para(title18, "Part 2: the next hour, on your own writing")
+expect(notes(18).paragraphs[2].text[:30], "The hour starts with a live de", "18 notes P2")
+add_note_after(notes(18), 2, "Two slides come before the demo: signing in on the Scripps "
+               "account, and the four lines nobody crosses.")
+part2_list = S(15)
+
+# ------------------------------------------------------------------ slide 16
+# Policy 708's confidentiality rule is the first row of slide 17.
+policy16 = shape(S(16), shape_id=9)
+expect(policy16.text_frame.text, "Scripps Research Policy treats a funding proposal as "
+       "confidential material, so it goes only into approved tools.", "16 policy line")
+drop_shape(S(16), 9)
+
+# ------------------------------------------------------------------ slide 19
+# The three layers are set out in full on slide 23, after the demo. Here they
+# are only named, with where each run happens, so the demo shows the rest.
+for sid in (4, 5, 6, 7, 12, 13, 19, 20, 27, 28):
+    drop_shape(S(19), sid)
+for sid, old, new in ((11, "What you type", "A new chat, outside any project"),
+                      (18, "Standing rules for a project",
+                       "A new conversation in the dinner-demo project"),
+                      (26, "A written method for one job",
+                       "The same project, naming the shopping-list skill")):
+    box = shape(S(19), shape_id=sid)
+    expect(box.text_frame.text, old, f"19 layer text {sid}")
+    set_para(box.text_frame.paragraphs[0], new)
+    box.width = Emu(11695176 - 250000 - box.left)
+n19 = notes(19).paragraphs
+expect(n19[2].text[:30], "A prompt lasts one request. CL", "19 notes P1")
+set_para(n19[2], "Name the three layers and leave it there: a prompt, a project's CLAUDE.md, "
+         "and a skill. What each one is, how long it lasts and where it lives comes out of the "
+         "demo, and the table after it puts the three side by side.")
+
+# ---------------------------------------------------------- slides 29 to 31
+# Slide 29 explained what a skill is, which the demo has already shown. Its one
+# instruction, open the files before running them, moves to the exercise, and
+# what a skill folder can hold moves to the biosketch slide, which shows it.
+first30 = shape(S(30), shape_id=7).text_frame.paragraphs
+expect(first30[1].text[:24], "Put your Aims page in dr", "30 First box")
+opener = copy.deepcopy(first30[1]._p)
+first30[1]._p.addprevious(opener)
+set_para(shape(S(30), shape_id=7).text_frame.paragraphs[1],
+         "Open skills/aims-checklist/SKILL.md, and the 22-item standard in reference/.")
+expect(notes(30).paragraphs[0].text[:30], "This is the demo's third layer", "30 notes P0")
+add_note_after(notes(30), 0, "Have them open skills/aims-checklist/SKILL.md before running it. "
+               "It is about a page: which checklist to use, four steps, the rules, and the "
+               "closing section on what it could not source. reference/checklist.md is the "
+               "standard it holds the page to: 22 items from the opening paragraph to the "
+               "closing one, then a 60-second reviewer test.")
+
+n31 = notes(31)
+expect(n31.paragraphs[0].text[:30], "This is why the biosketch is n", "31 notes P0")
+expect(n31.paragraphs[4].text[:30], "Everything from the demo still", "31 notes P2")
+add_note_after(n31, 4, "Nothing here is specific to grants. A lab analysis pipeline, a house "
+               "style for figures, a release checklist for a dataset: same structure, same "
+               "parts.")
+add_note_after(n31, 0, "It is also the first skill on screen with more than a SKILL.md. A skill "
+               "folder can hold reference documents, templates and scripts beside the "
+               "instructions, and they are read only when the skill runs. The Aims checklist "
+               "already had one, its reference/ standard.")
+what_a_skill_is = S(29)
+
+# Held by object for the moves at the end, after the inserts have renumbered.
+agentic, nature, sign_in, next_hour = S(4), S(5), S(16), S(18)
+
 # -------------------------------------------------------- the contact slide
 # A slide of contact details goes in after the title slide, which moves every
 # later slide up by one. Every edit above addresses slides by their position in
 # source.pptx, so this runs last, and the deck's own cross-references are
-# renumbered here to match the finished deck.
+# renumbered here to match the finished deck. Slide 5 keeps its number: the
+# contact slide moves it up one and the swap with slide 4 below moves it back.
 
-retarget_note(notes(8), 12, "slide 17", "slide 18")
 retarget_note(notes(28), 4, "slide 17", "slide 18")
-retarget_note(notes(19), 0, "Slide 5 said", "Slide 6 said")
-retarget_note(notes(20), 6, "slide 5,", "slide 6,")
 retarget_note(notes(20), 6, "slide 3,", "slide 4,")
-foot20 = shape(S(20), name="Footnote").text_frame.paragraphs[0]
-expect(foot20.runs[0].text[:8], "Slide 5:", "20 footnote")
-foot20.runs[0].text = foot20.runs[0].text.replace("Slide 5:", "Slide 6:", 1)
 
 NAVY = RGBColor(0x14, 0x21, 0x3D)       # the dark slides' background
 CREAM = RGBColor(0xF7, 0xF5, 0xEF)      # headings on it
@@ -406,6 +558,31 @@ seed_notes(download, notes_model).text = "\n\n".join([
 # Put it immediately before the hands-on slide.
 slide_ids.insert(prs.slides.index(hands_on), slide_ids[-1])
 
+# ------------------------------------------------------ moves and removals
+# By object, now that the inserts are done. The Part 2 cards take the place of
+# the list they replace, ahead of the sign-in and the floor slides, which keep
+# their numbers. The nature of generative AI follows the mechanism directly, and
+# the move from chat to agents comes after it.
+
+
+def sld_id(slide):
+    for entry in slide_ids:
+        if prs.part.related_part(entry.rId) is slide.part:
+            return entry
+    raise SystemExit("slide is not in the deck")
+
+
+slide_ids.insert(prs.slides.index(sign_in), sld_id(next_hour))
+slide_ids.insert(prs.slides.index(agentic), sld_id(nature))
+
+removed = set()
+for gone in (part2_list, what_a_skill_is):
+    for part in (gone.part, gone.notes_slide.part):
+        name = str(part.partname).lstrip("/")
+        folder, base = name.rsplit("/", 1)
+        removed |= {name, f"{folder}/_rels/{base}.rels"}
+    drop_slide(gone)
+
 # python-pptx re-serializes every XML part on save. Keep the source's bytes for
 # every part whose content did not change, so the author's slides carry the
 # same XML and only the edited parts differ.
@@ -449,11 +626,13 @@ buf = io.BytesIO()
 prs.save(buf)
 src, new = zipfile.ZipFile(SRC), zipfile.ZipFile(buf)
 dropped = set(src.namelist()) - set(new.namelist())
-assert not dropped, f"parts dropped: {sorted(dropped)}"
+assert dropped == removed, f"parts dropped: {sorted(dropped ^ removed)}"
 added = [n for n in new.namelist() if n not in set(src.namelist())]
 changed = []
 with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as out:
     for info in src.infolist():
+        if info.filename in removed:
+            continue
         old_b, new_b = src.read(info.filename), new.read(info.filename)
         same = canon(old_b, info.filename) == canon(new_b, info.filename)
         data = retheme(old_b if same else new_b, info.filename)

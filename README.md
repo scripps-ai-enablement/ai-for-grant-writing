@@ -14,7 +14,7 @@ highest-numbered directory is always the one to teach from.
 ## What students download
 
 One zip, `grantwriting-seminar.zip`, attached to the
-[latest release](../../releases/latest). Slide 27 sends people there by a short
+[latest release](../../releases/latest). Slide 26 sends people there by a short
 link, `tinyurl.com/trbio431-ai`, which points at the release page rather than at
 a file so that it keeps working when a later version ships. Unzipping it gives
 three folders:
@@ -32,4 +32,4 @@ three folders:
 The bundle is the only thing attached, so there is nothing to choose between on
 the release page. The skills are plain markdown and the rules file is twenty
 lines, so both are worth reading before running anything (that is step 4 on
-slide 28, and it is the step people skip).
+slide 27, and it is the step people skip).
