@@ -29,7 +29,7 @@ three folders:
 - `dinner-demo` is the three-layer demo the seminar opens with, for anyone who
   wants to run it themselves afterwards.
 
-All three are attached to the release separately as well, for anyone who wants
-only one of them. The skills are plain markdown and the rules file is twenty
+The bundle is the only thing attached, so there is nothing to choose between on
+the release page. The skills are plain markdown and the rules file is twenty
 lines, so both are worth reading before running anything (that is step 4 on
 slide 28, and it is the step people skip).

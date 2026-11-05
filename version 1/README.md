@@ -3,7 +3,7 @@
 | Path | What it is | Ships to students |
 |---|---|---|
 | `Using AI for Grant Writing v1.pptx` | The deck, and the artifact of record | Presented |
-| `grantwriting-seminar.zip` | All three student folders in one download, which is what slide 27 links to | Yes |
+| `grantwriting-seminar.zip` | All three student folders in one download, the only thing attached to the release | Yes |
 | `grantwriting-starter/`, `.zip` | The starter: rules, skills, and a one-line placeholder for each part of a proposal | Yes |
 | `grantwriting-example/`, `.zip` | The same folder filled with a 2012 R21 (PAR-09-219), with all five skills run on it | Yes |
 | `demo/dinner-demo/`, `.zip` | The three-layer demo from slides 21-23 | Yes |
@@ -25,7 +25,9 @@ points at the release page rather than at a file, so it survives both a new
 version and a change of file names, and it is short enough to be typed from the
 back of a room onto a laptop, which is where the folder has to end up.
 
-Publishing a version means rebuilding the four zips from the folders and
-attaching them to a new release. `grantwriting-seminar.zip` is the one students
-are told to take; the other three are there for anyone who wants a single
-folder.
+Publishing a version means rebuilding `grantwriting-seminar.zip` from the three
+folders and attaching it to a new release, on its own. A release page with one
+asset gives a room of twenty people nothing to choose between, which is the
+whole point of the short link. GitHub attaches its own "Source code" archives to
+every release and there is no way to suppress them, so one asset is as clean as
+the page gets.

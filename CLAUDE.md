@@ -28,10 +28,10 @@ the current version.
 
 The materials are public at
 `github.com/scripps-ai-enablement/ai-for-grant-writing`. Releasing a version
-means tagging it and attaching that version's zips to the release: the bundle
-students are told to download, and each folder on its own for anyone who wants
-one. Rebuild them from the folders before attaching, and check that the file
-lists match.
+means tagging it and attaching one asset: the bundle holding every folder that
+ships. Attach nothing else, so that the release page offers no choice. Rebuild
+the bundle from the folders before attaching, and check that its file list
+matches them.
 
 The deck sends students to `tinyurl.com/trbio431-ai`, which redirects to
 `releases/latest`. Keep that redirect pointing there. Because it names the

@@ -391,8 +391,9 @@ seed_notes(download, notes_model).text = "\n\n".join([
     "rather send it to their own phone and mail it on.",
 
     "tinyurl.com/trbio431-ai points at the repository's latest release, not at "
-    "a file, so it keeps working when a later version ships. The release page "
-    "also carries the three folders separately for anyone who wants only one.",
+    "a file, so it keeps working when a later version ships. The bundle is the "
+    "only thing attached to it, so there is nothing on that page to choose "
+    "between except GitHub's own source archives, which it adds by itself.",
 
     "Send the same link in the calendar invite and again on the morning of the "
     "class. The ones who arrive with the folder already unzipped are the ones "
