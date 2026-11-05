@@ -26,9 +26,3 @@ Both folders are attached as zips to the
 The skills are plain markdown and the rules file is twenty lines, so both are
 worth reading before running anything (that is step 4 on slide 26, and it is the
 step people skip).
-
-## Not here
-
-The speaker notes point at an `instructor-only/` folder holding the 2012 summary
-statement and a comparison between it and the mock panel. That material is
-privileged and is not in this repository.

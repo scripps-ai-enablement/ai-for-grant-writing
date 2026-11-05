@@ -173,9 +173,7 @@ n33 = notes(33)
 expect(n33.paragraphs[6].text[:30], "If someone's draft is early or", "33 notes")
 add_note_after(n33, 6, "In the example, drafts/summary.md holds two sentences taken from the "
                "submitted project summary, standing in for the author's own, and the saved panel "
-               "is in reviews/. How that panel compares with the study section that reviewed the "
-               "application is in instructor-only/, beside the deck, which does not go to "
-               "students.")
+               "is in reviews/.")
 
 # python-pptx re-serializes every XML part on save. Keep the source's bytes for
 # every part whose content did not change, so the author's slides carry the

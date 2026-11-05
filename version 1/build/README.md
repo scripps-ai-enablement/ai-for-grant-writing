@@ -43,10 +43,7 @@ deck in line with the folders as they now are.
   Aims review.
 - **32:** the notes on the sample's planted gaps describe the gaps in the
   example instead, all of which the saved biosketch report names.
-- **33:** a notes paragraph on the example's saved panel, and a pointer to
-  `../instructor-only/`, which holds the comparison with the 2012 study section.
-  The notes say where that comparison is and not what it found, because the
-  summary statement is privileged and the notes travel with the deck.
+- **33:** a notes paragraph on the example's saved panel.
 - **theme:** hyperlink text takes its colour from the theme's `<a:hlink>` rather
   than from the run's own fill, so the theme colour is the orange the two links
   on slide 26 are styled in. They are the only hyperlinks in the deck.
