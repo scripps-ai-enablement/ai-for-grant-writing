@@ -13,8 +13,11 @@ highest-numbered directory is always the one to teach from.
 
 ## What students download
 
-Both folders are attached as zips to the
-[latest release](../../releases/latest), which is where slide 27 sends people.
+One zip, `grantwriting-seminar.zip`, attached to the
+[latest release](../../releases/latest). Slide 27 sends people there by a short
+link, `tinyurl.com/trbio431-ai`, which points at the release page rather than at
+a file so that it keeps working when a later version ships. Unzipping it gives
+three folders:
 
 - `grantwriting-starter` is the folder as it ships: the rules file, the five
   skills, and a one-line placeholder for each part of a proposal, to be filled
@@ -22,7 +25,10 @@ Both folders are attached as zips to the
 - `grantwriting-example` is that same folder with a funded 2012 R21 application
   (PAR-09-219) already in it, together with the review each of the five skills
   produced on that text, for anyone who turns up without a draft.
+- `dinner-demo` is the three-layer demo the seminar opens with, for anyone who
+  wants to run it themselves afterwards.
 
-The skills are plain markdown and the rules file is twenty lines, so both are
-worth reading before running anything (that is step 4 on slide 27, and it is the
-step people skip).
+All three are attached to the release separately as well, for anyone who wants
+only one of them. The skills are plain markdown and the rules file is twenty
+lines, so both are worth reading before running anything (that is step 4 on
+slide 28, and it is the step people skip).

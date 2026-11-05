@@ -20,6 +20,8 @@ from pptx.util import Emu, Pt
 
 SRC = "source.pptx"
 QR = "research-ai-slack-qr.png"
+DOWNLOAD_QR = "downloads-qr.png"
+SHORT_LINK = "https://tinyurl.com/trbio431-ai"   # -> /releases/latest
 OUT = "../Using AI for Grant Writing v1.pptx"
 
 
@@ -113,23 +115,21 @@ retarget_note(notes(20), 0, "in version 8/demo/", "in demo/")
 step1 = shape(S(26), name="Step 1 text").text_frame.paragraphs[0]
 r0, r1 = step1.runs
 expect((r0.text, r1.text), ("Download the starter folder and unzip it", " [link]"), "26 step 1")
-r0.text = "Download the starter folder"
-a = add_run_after(r1, " [link]")                      # orange, like the first link
-b = copy.deepcopy(r0._r); a.addprevious(b)            # navy text between the links
-b.find("{http://schemas.openxmlformats.org/drawingml/2006/main}t").text = " and the example"
-c = copy.deepcopy(r0._r); a.addnext(c)
-c.find("{http://schemas.openxmlformats.org/drawingml/2006/main}t").text = ", and unzip both"
+# The download has a slide of its own now, so step 1 only says what to do with
+# the file. r1 carries the rust the deck uses for file names; keep it for the
+# folder name and clone r0's navy for the tail.
+r0.text = "Unzip "
+r1.text = "grantwriting-seminar"
+r1.font.name = "Courier New"          # file names on the light slides
+tail = copy.deepcopy(r0._r)
+r1._r.addnext(tail)
+tail.find("{http://schemas.openxmlformats.org/drawingml/2006/main}t").text = (
+    ", the folder you just downloaded")
 
-# The two placeholders become the download links. /releases/latest/download/
-# always resolves to the newest release, so the deck does not name a tag and
-# does not have to be re-edited when a later version ships.
-RELEASES = ("https://github.com/scripps-ai-enablement/ai-for-grant-writing"
-            "/releases/latest/download/")
-links = [r for r in step1.runs if r.text == " [link]"]
-expect(len(links), 2, "26 step 1 placeholders")
-for run, zip_name in zip(links, ("grantwriting-starter.zip", "grantwriting-example.zip")):
-    run.text = " (zip)"
-    run.hyperlink.address = RELEASES + zip_name
+step3 = shape(S(26), name="Step 3 text").text_frame.paragraphs[0]
+expect(step3.runs[1].text, "grantwriting-starter", "26 step 3")
+expect(step3.runs[2].text, ". Leave Instructions empty. ", "26 step 3 tail")
+step3.runs[2].text = " inside it. Leave Instructions empty. "
 
 foot26 = shape(S(26), name="Footnote").text_frame.paragraphs[0]
 expect(foot26.runs[0].text, "What you just watched, with your grant in place of dinner.", "26 footnote")
@@ -207,6 +207,14 @@ CARD_X = RIGHT - CARD
 CARD_Y = 2950000
 PAD = 240000                            # the code's quiet zone on the plate
 
+PAPER = RGBColor(0xEC, 0xE8, 0xDD)      # the light slides' background
+INK = RGBColor(0x14, 0x21, 0x3D)        # headings and body on it
+STEEL = RGBColor(0x2E, 0x6F, 0x95)      # kickers
+RUST = RGBColor(0xB4, 0x52, 0x1A)       # file names and things you type
+GREY = RGBColor(0x5A, 0x62, 0x72)       # footnotes
+CARD_FILL = RGBColor(0xFF, 0xFD, 0xF8)  # the cards on the light slides
+CARD_LINE = RGBColor(0xDE, 0xD8, 0xCA)
+
 
 def text_box(slide, left, top, width, height, parts, size, bold=False,
              font="Arial", spacing=1.25):
@@ -218,12 +226,13 @@ def text_box(slide, left, top, width, height, parts, size, bold=False,
     frame.margin_top = frame.margin_bottom = 0
     para = frame.paragraphs[0]
     para.line_spacing = spacing
-    for text, colour in parts:
+    for part in parts:
+        text, colour = part[0], part[1]
         run = para.add_run()
         run.text = text
         run.font.size = Pt(size)
         run.font.bold = bold
-        run.font.name = font
+        run.font.name = part[2] if len(part) > 2 else font
         run.font.color.rgb = colour
     return box
 
@@ -240,13 +249,17 @@ def seed_notes(slide, model):
     return frame
 
 
-def plate(slide, shape_kind, left, top, width, height, colour):
-    """A filled shape with no outline and no shadow."""
+def plate(slide, shape_kind, left, top, width, height, colour, line=None):
+    """A filled shape with no shadow, outlined only when asked."""
     sp = slide.shapes.add_shape(shape_kind, Emu(left), Emu(top),
                                 Emu(width), Emu(height))
     sp.fill.solid()
     sp.fill.fore_color.rgb = colour
-    sp.line.fill.background()
+    if line is None:
+        sp.line.fill.background()
+    else:
+        sp.line.color.rgb = line
+        sp.line.width = Pt(1)
     sp.shadow.inherit = False
     return sp
 
@@ -255,6 +268,7 @@ def plate(slide, shape_kind, left, top, width, height, colour):
 # from a slide that has one. Hold the reference now: it survives the reordering
 # below, which a slide number would not.
 notes_model = S(18)
+hands_on = S(26)       # found by object, not by number, after the inserts below
 
 
 def contact_slide(speaker_notes):
@@ -328,6 +342,68 @@ contact_slide([
     "addresses are the only live routes on the slide. Worth knowing before "
     "someone tells you in the corridor.",
 ])
+
+# ------------------------------------------------------- the download slide
+# One slide whose whole job is getting the files onto 20 laptops: the short
+# link big enough to read from the back and type, and the same link as a code
+# for anyone who would rather use their phone. It goes immediately before the
+# hands-on slide, whose position is found from the slide itself rather than by
+# number, since the contact slide has already moved everything down by one.
+
+download = prs.slides.add_slide(prs.slides[0].slide_layout)
+download.background.fill.solid()
+download.background.fill.fore_color.rgb = PAPER
+
+text_box(download, MARGIN, 812750, 10883421, 309802,
+         [("HANDS-ON \u00b7 GET THE FILES", STEEL)], 16, bold=True)
+text_box(download, MARGIN, 1198745, 10883421, 700000,
+         [("Download the folder", INK)], 40, font="Georgia")
+
+text_box(download, MARGIN, 2450000, COL, 300000,
+         [("TYPE THIS, OR SCAN THE CODE", RUST)], 14, bold=True)
+link = text_box(download, MARGIN, 2800000, COL, 800000,
+                [("tinyurl.com/trbio431-ai", RUST)], 36)
+link.text_frame.paragraphs[0].runs[0].hyperlink.address = SHORT_LINK
+
+text_box(download, MARGIN, 3850000, COL, 400000,
+         [("One zip. Unzip it and you have three folders:", INK)], 20)
+for row, (name, what) in enumerate((
+        ("grantwriting-starter", " \u2014 for your own draft"),
+        ("grantwriting-example", " \u2014 a funded R21, with the reviews"),
+        ("dinner-demo", " \u2014 the demo you just watched"))):
+    text_box(download, MARGIN, 4320000 + row * 450000, COL, 400000,
+             [(name, RUST, "Courier New"), (what, INK)], 20)
+
+plate(download, MSO_SHAPE.ROUNDED_RECTANGLE, CARD_X, 2450000, CARD, CARD,
+      CARD_FILL, line=CARD_LINE).adjustments[0] = 0.05
+download.shapes.add_picture(DOWNLOAD_QR, Emu(CARD_X + PAD), Emu(2450000 + PAD),
+                            Emu(CARD - 2 * PAD), Emu(CARD - 2 * PAD))
+
+text_box(download, MARGIN, 5950000, 10883421, 400000,
+         [("Everything in the next four steps happens inside that folder.", GREY)], 14)
+
+seed_notes(download, notes_model).text = "\n\n".join([
+    "This is the slide to be patient on. Put it up, read the link out, and "
+    "wait until the room has stopped typing before moving on.",
+
+    "The link is short so that it can be typed on a laptop, which is where the "
+    "folder has to end up. The code is the same link, for anyone who would "
+    "rather send it to their own phone and mail it on.",
+
+    "tinyurl.com/trbio431-ai points at the repository's latest release, not at "
+    "a file, so it keeps working when a later version ships. The release page "
+    "also carries the three folders separately for anyone who wants only one.",
+
+    "Send the same link in the calendar invite and again on the morning of the "
+    "class. The ones who arrive with the folder already unzipped are the ones "
+    "who get the full hour on their own writing.",
+
+    "The usual snag is unzipping into a folder inside a folder, so the chosen "
+    "folder holds one item rather than the three. Walk the room.",
+])
+
+# Put it immediately before the hands-on slide.
+slide_ids.insert(prs.slides.index(hands_on), slide_ids[-1])
 
 # python-pptx re-serializes every XML part on save. Keep the source's bytes for
 # every part whose content did not change, so the author's slides carry the

@@ -28,11 +28,15 @@ the current version.
 
 The materials are public at
 `github.com/scripps-ai-enablement/ai-for-grant-writing`. Releasing a version
-means tagging it and attaching that version's two zips to the release. Slide 27
-links to `releases/latest/download/`, which resolves to the newest release, so
-the deck does not name a tag and needs no edit when a later version ships.
-Rebuild the zips from the folders before attaching them, and check that the file
+means tagging it and attaching that version's zips to the release: the bundle
+students are told to download, and each folder on its own for anyone who wants
+one. Rebuild them from the folders before attaching, and check that the file
 lists match.
+
+The deck sends students to `tinyurl.com/trbio431-ai`, which redirects to
+`releases/latest`. Keep that redirect pointing there. Because it names the
+release page and not a file, a new version needs no edit to the deck, and the
+zips can be renamed without breaking the slide.
 
 Two things stay out of the repository, enforced by `.gitignore`: `instructor-only/`
 in every version, and `archive/`, which holds drafts that predate the repository.
