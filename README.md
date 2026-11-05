@@ -22,9 +22,10 @@ three folders:
 - `grantwriting-starter` is the folder as it ships: the rules file, the five
   skills, and a one-line placeholder for each part of a proposal, to be filled
   with a draft of your own.
-- `grantwriting-example` is that same folder with a funded 2012 R21 application
-  (PAR-09-219) already in it, together with the review each of the five skills
-  produced on that text, for anyone who turns up without a draft.
+- `grantwriting-example` is that same folder with a real 2012 R21 application
+  (PAR-09-219) already in it, submitted and not funded, together with the review
+  each of the five skills produced on that text, for anyone who turns up without
+  a draft.
 - `dinner-demo` is the three-layer demo the seminar opens with, for anyone who
   wants to run it themselves afterwards.
 

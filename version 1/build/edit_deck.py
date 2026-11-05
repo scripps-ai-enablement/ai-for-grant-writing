@@ -369,7 +369,7 @@ text_box(download, MARGIN, 3850000, COL, 400000,
          [("One zip. Unzip it and you have three folders:", INK)], 20)
 for row, (name, what) in enumerate((
         ("grantwriting-starter", " \u2014 for your own draft"),
-        ("grantwriting-example", " \u2014 a funded R21, with the reviews"),
+        ("grantwriting-example", " \u2014 a real R21, with the reviews"),
         ("dinner-demo", " \u2014 the demo you just watched"))):
     text_box(download, MARGIN, 4320000 + row * 450000, COL, 400000,
              [(name, RUST, "Courier New"), (what, INK)], 20)
