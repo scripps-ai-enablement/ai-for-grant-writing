@@ -1,0 +1,23 @@
+# AI use log
+
+One line per session. This is the record behind any disclosure statement you
+write, and the evidence of what you wrote yourself.
+
+Runs append new rows to the **end of the file**, so keep the table last.
+Anything you add below it, a disclosure draft most of all, will catch the next
+append in the wrong place. The section above the table is where that belongs.
+
+## Disclosure statement drafted from this log
+
+[Two or three sentences naming the tool, what it did and how you checked it.
+Write it once you have rows to draw on, and keep it here, above the table.]
+
+## Log
+
+| Date | Tool | What I asked | Files read | What I kept |
+|---|---|---|---|---|
+| 2026-11-04 | Claude (Cowork), aims-checklist skill | Check the Specific Aims page against the Aims checklist (built-in checklist; checklists/ empty) | CLAUDE.md, README.md, skills/aims-checklist/SKILL.md, skills/aims-checklist/reference/checklist.md, skills/biosketch/scripts/count_chars.py, checklists/README.md, drafts/README.md, drafts/aims.md, drafts/approach.md, funder/README.md, funder/PAR-09-219.md, funder/nih-scoring.md, evidence/README.md, evidence/preliminary-data.md, evidence/references.md, evidence/letters-of-support.md, evidence/products.md (P16 only), reviews/README.md, ai-use-log.md | Review saved to reviews/2026-11-04-aims-aims-checklist.md; critique only, no draft changed |
+| 2026-11-04 | Claude (Cowork), significance-checklist skill | Check my Significance section with skills/significance-checklist/SKILL.md (Innovation reviewed with it, as the skill does) | CLAUDE.md; skills/significance-checklist/SKILL.md and reference/checklist.md; checklists/README.md; funder/README.md, PAR-09-219.md, nih-scoring.md; drafts/README.md, significance.md, innovation.md, aims.md, approach.md, figures/README.md, figures/figure-1-the-cure-round.png; evidence/README.md, references.md, preliminary-data.md; README.md; reviews/README.md | Critique saved to reviews/2026-11-04-significance-significance-checklist.md; no draft text written or changed |
+| 2026-11-04 | Claude (Cowork), mock-panel skill | Run a mock review panel (expert, adjacent reader, generalist) on the whole draft, scored against PAR-09-219 criteria; author unavailable, so questions for the author are listed in the review | CLAUDE.md, README.md, skills/mock-panel/SKILL.md, drafts/README.md, drafts/aims.md, drafts/significance.md, drafts/innovation.md, drafts/approach.md, drafts/summary.md, drafts/project-summary.md, drafts/facilities.md, drafts/personnel.md, drafts/resource-sharing.md, drafts/figures/README.md, drafts/figures/figure-1-the-cure-round.png, drafts/figures/figure-2-genes-selected.png, funder/README.md, funder/PAR-09-219.md, funder/nih-scoring.md, evidence/README.md, evidence/references.md, evidence/preliminary-data.md, evidence/letters-of-support.md, evidence/biosketches/su-2012.md, evidence/biosketches/good-2012.md, evidence/cv.md, evidence/products.md, checklists/README.md, reviews/README.md, ai-use-log.md | Review saved to reviews/2026-11-04-research-strategy-mock-panel.md; critique only, no draft changed |
+| 2026-11-04 | Claude (Cowork), biosketch skill | Follow skills/biosketch/SKILL.md to draft my biosketch (Personal Statement, two product lists, two Contributions to Science; 2026 NIH form rules, since funder/ has no biosketch instructions); author unavailable, so questions are listed in the report | CLAUDE.md, README.md, skills/biosketch/SKILL.md, reference/form-rules.md, reference/forli-method.md, templates/biosketch.md, scripts/count_chars.py (run), drafts/README.md, drafts/aims.md, evidence/README.md, evidence/cv.md, evidence/products.md, funder/README.md, funder/PAR-09-219.md, checklists/README.md, reviews/README.md, ai-use-log.md; PubMed connector for 10 product records | Draft saved to drafts/biosketch-draft.md (AI draft, every line to be checked); check report saved to reviews/2026-11-04-biosketch-biosketch.md; certification, Honors, positions and identifying sections not touched |
+| 2026-11-04 | Claude (Cowork), reference-check skill, with PubMed connector and web search | Check the references in my Significance, Innovation and Approach sections (author unavailable; open questions listed in the review) | CLAUDE.md, README.md, skills/reference-check/SKILL.md, drafts/README.md, drafts/significance.md, drafts/innovation.md, drafts/approach.md, drafts/figures/figure-2-genes-selected.png, evidence/README.md, evidence/references.md, evidence/letters-of-support.md, evidence/preliminary-data.md, funder/README.md, funder/PAR-09-219.md, checklists/README.md, reviews/README.md, ai-use-log.md | Review saved to reviews/2026-11-04-full-reference-check.md; critique only, no draft changed |
