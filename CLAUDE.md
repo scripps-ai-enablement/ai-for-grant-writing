@@ -28,7 +28,7 @@ the current version.
 
 The materials are public at
 `github.com/scripps-ai-enablement/ai-for-grant-writing`. Releasing a version
-means tagging it and attaching that version's two zips to the release. Slide 26
+means tagging it and attaching that version's two zips to the release. Slide 27
 links to `releases/latest/download/`, which resolves to the newest release, so
 the deck does not name a tag and needs no edit when a later version ships.
 Rebuild the zips from the folders before attaching them, and check that the file

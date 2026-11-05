@@ -14,8 +14,12 @@ Run from this folder:  python3 edit_deck.py
 import copy
 
 from pptx import Presentation
+from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.util import Emu, Pt
 
 SRC = "source.pptx"
+QR = "research-ai-slack-qr.png"
 OUT = "../Using AI for Grant Writing v1.pptx"
 
 
@@ -175,6 +179,130 @@ add_note_after(n33, 6, "In the example, drafts/summary.md holds two sentences ta
                "submitted project summary, standing in for the author's own, and the saved panel "
                "is in reviews/.")
 
+# -------------------------------------------------------- the contact slide
+# A slide of contact details goes in after the title slide, which moves every
+# later slide up by one. Every edit above addresses slides by their position in
+# source.pptx, so this runs last, and the deck's own cross-references are
+# renumbered here to match the finished deck.
+
+retarget_note(notes(8), 12, "slide 17", "slide 18")
+retarget_note(notes(28), 4, "slide 17", "slide 18")
+retarget_note(notes(19), 0, "Slide 5 said", "Slide 6 said")
+retarget_note(notes(20), 6, "slide 5,", "slide 6,")
+retarget_note(notes(20), 6, "slide 3,", "slide 4,")
+foot20 = shape(S(20), name="Footnote").text_frame.paragraphs[0]
+expect(foot20.runs[0].text[:8], "Slide 5:", "20 footnote")
+foot20.runs[0].text = foot20.runs[0].text.replace("Slide 5:", "Slide 6:", 1)
+
+NAVY = RGBColor(0x14, 0x21, 0x3D)       # the dark slides' background
+CREAM = RGBColor(0xF7, 0xF5, 0xEF)      # headings on it
+ORANGE = RGBColor(0xE8, 0xA0, 0x6A)     # kickers, labels, things you type
+MUTED = RGBColor(0xC9, 0xD1, 0xE0)      # body text
+WHITE = RGBColor(0xFF, 0xFF, 0xFF)
+MARGIN = 812750                         # the left margin the deck uses
+RIGHT = 11379250                        # and the right edge it stops at
+
+
+def text_box(slide, left, top, width, height, parts, size, bold=False,
+             font="Arial", spacing=1.25):
+    """A text box in the deck's own style. `parts` is (text, colour) pairs."""
+    box = slide.shapes.add_textbox(Emu(left), Emu(top), Emu(width), Emu(height))
+    frame = box.text_frame
+    frame.word_wrap = True
+    frame.margin_left = frame.margin_right = 0
+    frame.margin_top = frame.margin_bottom = 0
+    para = frame.paragraphs[0]
+    para.line_spacing = spacing
+    for text, colour in parts:
+        run = para.add_run()
+        run.text = text
+        run.font.size = Pt(size)
+        run.font.bold = bold
+        run.font.name = font
+        run.font.color.rgb = colour
+    return box
+
+
+def seed_notes(slide, model):
+    """Give a new slide a notes body. The notes master carries no placeholders,
+    so a new notes slide comes without one; clone it from a slide that has it."""
+    body = copy.deepcopy(model.notes_slide.notes_placeholder._element)
+    nvpr = body.find(".//{http://schemas.openxmlformats.org/presentationml/2006/main}cNvPr")
+    nvpr.set("id", "10")
+    slide.notes_slide.shapes._spTree.append(body)
+    frame = slide.notes_slide.notes_text_frame
+    frame.clear()
+    return frame
+
+
+def plate(slide, shape_kind, left, top, width, height, colour):
+    """A filled shape with no outline and no shadow."""
+    sp = slide.shapes.add_shape(shape_kind, Emu(left), Emu(top),
+                                Emu(width), Emu(height))
+    sp.fill.solid()
+    sp.fill.fore_color.rgb = colour
+    sp.line.fill.background()
+    sp.shadow.inherit = False
+    return sp
+
+
+contact = prs.slides.add_slide(prs.slides[0].slide_layout)
+contact.background.fill.solid()
+contact.background.fill.fore_color.rgb = NAVY
+plate(contact, MSO_SHAPE.RECTANGLE, 0, 0, 152391, 6857954, ORANGE)
+
+text_box(contact, MARGIN, 812750, 10883421, 309802,
+         [("CONTACT \u00b7 RESOURCES", ORANGE)], 16, bold=True)
+text_box(contact, MARGIN, 1198745, 10883421, 700000,
+         [("Where to find help", CREAM)], 44, font="Georgia")
+
+COL = 7200000
+text_box(contact, MARGIN, 2600000, COL, 300000, [("EMAIL", ORANGE)], 14, bold=True)
+text_box(contact, MARGIN, 2950000, COL, 520000,
+         [("bgood@scripps.edu", CREAM)], 26)
+text_box(contact, MARGIN, 4050000, COL, 300000,
+         [("RESEARCH-AI MAILING LIST", ORANGE)], 14, bold=True)
+text_box(contact, MARGIN, 4400000, COL, 1000000,
+         [("Email ", MUTED), ("listserv@scripps.edu", ORANGE),
+          (" with ", MUTED), ("subscribe research-ai", ORANGE),
+          (" in the body of the message", MUTED)], 22)
+
+CARD = 2700000
+CARD_X = RIGHT - CARD
+CARD_Y = 2950000
+PAD = 240000
+text_box(contact, CARD_X, 2600000, CARD, 300000, [("SLACK", ORANGE)], 14, bold=True)
+qr_card = plate(contact, MSO_SHAPE.ROUNDED_RECTANGLE,
+                CARD_X, CARD_Y, CARD, CARD, WHITE)
+qr_card.adjustments[0] = 0.05
+contact.shapes.add_picture(QR, Emu(CARD_X + PAD), Emu(CARD_Y + PAD),
+                           Emu(CARD - 2 * PAD), Emu(CARD - 2 * PAD))
+text_box(contact, CARD_X, CARD_Y + CARD + 110000, CARD, 600000,
+         [("Scan to join the Research AI workspace", MUTED)], 14)
+
+seed_notes(contact, S(18)).text = "\n\n".join([
+    "Thirty seconds now, as the introduction, and the same slide again at the "
+    "end, as the answer to what to do when you get stuck next week.",
+
+    "Email is the one that always works. Say it as well as showing it.",
+
+    "The mailing list runs on LISTSERV, so the command goes in the body of the "
+    "message and the subject line is ignored: one line reading subscribe "
+    "research-ai, and nothing else in it.",
+
+    "The code decodes to https://join.slack.com/t/research-aihq/shared_invite/"
+    "zt-444y0klbl-0Hu7f_ERWT52uD9l_v8IpQ. Shared invite links can be set to "
+    "expire, so open it in a browser before class and generate a new code from "
+    "Slack if it has lapsed.",
+
+    "Leave the slide up while people get their phones out. Ten seconds is not "
+    "long enough for the back of the room to focus on a code this size.",
+])
+
+# add_slide appends, so move it from the end into second place.
+slide_ids = prs.slides._sldIdLst
+slide_ids.insert(1, slide_ids[-1])
+
 # python-pptx re-serializes every XML part on save. Keep the source's bytes for
 # every part whose content did not change, so the author's slides carry the
 # same XML and only the edited parts differ.
@@ -217,7 +345,9 @@ def canon(data, name):
 buf = io.BytesIO()
 prs.save(buf)
 src, new = zipfile.ZipFile(SRC), zipfile.ZipFile(buf)
-assert set(src.namelist()) == set(new.namelist()), "part list changed"
+dropped = set(src.namelist()) - set(new.namelist())
+assert not dropped, f"parts dropped: {sorted(dropped)}"
+added = [n for n in new.namelist() if n not in set(src.namelist())]
 changed = []
 with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as out:
     for info in src.infolist():
@@ -227,5 +357,8 @@ with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as out:
         out.writestr(info, data)
         if not same or data != old_b:
             changed.append(info.filename)
+    for name in added:
+        out.writestr(name, new.read(name))
 print("wrote", OUT)
 print("changed parts:", ", ".join(changed))
+print("added parts:", ", ".join(added))

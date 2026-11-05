@@ -14,7 +14,7 @@ highest-numbered directory is always the one to teach from.
 ## What students download
 
 Both folders are attached as zips to the
-[latest release](../../releases/latest), which is where slide 26 sends people.
+[latest release](../../releases/latest), which is where slide 27 sends people.
 
 - `grantwriting-starter` is the folder as it ships: the rules file, the five
   skills, and a one-line placeholder for each part of a proposal, to be filled
@@ -24,5 +24,5 @@ Both folders are attached as zips to the
   produced on that text, for anyone who turns up without a draft.
 
 The skills are plain markdown and the rules file is twenty lines, so both are
-worth reading before running anything (that is step 4 on slide 26, and it is the
+worth reading before running anything (that is step 4 on slide 27, and it is the
 step people skip).

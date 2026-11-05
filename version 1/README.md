@@ -5,9 +5,9 @@
 | `Using AI for Grant Writing v1.pptx` | The deck, and the artifact of record | Presented |
 | `grantwriting-starter/`, `.zip` | The starter: rules, skills, and a one-line placeholder for each part of a proposal | Yes |
 | `grantwriting-example/`, `.zip` | The same folder filled with a 2012 R21 (PAR-09-219), with all five skills run on it | Yes |
-| `demo/` | The dinner demo for slides 20-22 | Instructor |
+| `demo/` | The dinner demo for slides 21-23 | Instructor |
 | `TEST-BEFORE-CLASS.md` | Pre-class checks on the app and the account the students will use | Instructor |
-| `build/` | The deck this one descends from, the script that produces it, and what was checked | No |
+| `build/` | The deck this one descends from, the script that produces it, the QR code it places, and what was checked | No |
 
 The starter and the example hold identical `CLAUDE.md` and `skills/` folders.
 They differ only in whether the drafts are filled in: students with a proposal
