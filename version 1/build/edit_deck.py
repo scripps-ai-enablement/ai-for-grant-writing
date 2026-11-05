@@ -201,6 +201,11 @@ MUTED = RGBColor(0xC9, 0xD1, 0xE0)      # body text
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 MARGIN = 812750                         # the left margin the deck uses
 RIGHT = 11379250                        # and the right edge it stops at
+COL = 7200000                           # the text column, left of the code
+CARD = 2700000                          # the white plate the code sits on
+CARD_X = RIGHT - CARD
+CARD_Y = 2950000
+PAD = 240000                            # the code's quiet zone on the plate
 
 
 def text_box(slide, left, top, width, height, parts, size, bold=False,
@@ -246,43 +251,51 @@ def plate(slide, shape_kind, left, top, width, height, colour):
     return sp
 
 
-contact = prs.slides.add_slide(prs.slides[0].slide_layout)
-contact.background.fill.solid()
-contact.background.fill.fore_color.rgb = NAVY
-plate(contact, MSO_SHAPE.RECTANGLE, 0, 0, 152391, 6857954, ORANGE)
+# The notes master carries no placeholders, so both copies borrow a notes body
+# from a slide that has one. Hold the reference now: it survives the reordering
+# below, which a slide number would not.
+notes_model = S(18)
 
-text_box(contact, MARGIN, 812750, 10883421, 309802,
-         [("CONTACT \u00b7 RESOURCES", ORANGE)], 16, bold=True)
-text_box(contact, MARGIN, 1198745, 10883421, 700000,
-         [("Where to find help", CREAM)], 44, font="Georgia")
 
-COL = 7200000
-text_box(contact, MARGIN, 2600000, COL, 300000, [("EMAIL", ORANGE)], 14, bold=True)
-text_box(contact, MARGIN, 2950000, COL, 520000,
-         [("bgood@scripps.edu", CREAM)], 26)
-text_box(contact, MARGIN, 4050000, COL, 300000,
-         [("RESEARCH-AI MAILING LIST", ORANGE)], 14, bold=True)
-text_box(contact, MARGIN, 4400000, COL, 1000000,
-         [("Email ", MUTED), ("listserv@scripps.edu", ORANGE),
-          (" with ", MUTED), ("subscribe research-ai", ORANGE),
-          (" in the body of the message", MUTED)], 22)
+def contact_slide(speaker_notes):
+    """Contact details, the mailing-list command and the Slack code. Built
+    twice, identical on screen, so the room recognises it the second time."""
+    slide = prs.slides.add_slide(prs.slides[0].slide_layout)
+    slide.background.fill.solid()
+    slide.background.fill.fore_color.rgb = NAVY
+    plate(slide, MSO_SHAPE.RECTANGLE, 0, 0, 152391, 6857954, ORANGE)
 
-CARD = 2700000
-CARD_X = RIGHT - CARD
-CARD_Y = 2950000
-PAD = 240000
-text_box(contact, CARD_X, 2600000, CARD, 300000, [("SLACK", ORANGE)], 14, bold=True)
-qr_card = plate(contact, MSO_SHAPE.ROUNDED_RECTANGLE,
-                CARD_X, CARD_Y, CARD, CARD, WHITE)
-qr_card.adjustments[0] = 0.05
-contact.shapes.add_picture(QR, Emu(CARD_X + PAD), Emu(CARD_Y + PAD),
-                           Emu(CARD - 2 * PAD), Emu(CARD - 2 * PAD))
-text_box(contact, CARD_X, CARD_Y + CARD + 110000, CARD, 600000,
-         [("Scan to join the Research AI workspace", MUTED)], 14)
+    text_box(slide, MARGIN, 812750, 10883421, 309802,
+             [("CONTACT \u00b7 RESOURCES", ORANGE)], 16, bold=True)
+    text_box(slide, MARGIN, 1198745, 10883421, 700000,
+             [("Where to find help", CREAM)], 44, font="Georgia")
 
-seed_notes(contact, S(18)).text = "\n\n".join([
-    "Thirty seconds now, as the introduction, and the same slide again at the "
-    "end, as the answer to what to do when you get stuck next week.",
+    text_box(slide, MARGIN, 2600000, COL, 300000, [("EMAIL", ORANGE)], 14, bold=True)
+    text_box(slide, MARGIN, 2950000, COL, 520000,
+             [("bgood@scripps.edu", CREAM)], 26)
+    text_box(slide, MARGIN, 4050000, COL, 300000,
+             [("RESEARCH-AI MAILING LIST", ORANGE)], 14, bold=True)
+    text_box(slide, MARGIN, 4400000, COL, 1000000,
+             [("Email ", MUTED), ("listserv@scripps.edu", ORANGE),
+              (" with ", MUTED), ("subscribe research-ai", ORANGE),
+              (" in the body of the message", MUTED)], 22)
+
+    text_box(slide, CARD_X, 2600000, CARD, 300000, [("SLACK", ORANGE)], 14, bold=True)
+    qr_card = plate(slide, MSO_SHAPE.ROUNDED_RECTANGLE,
+                    CARD_X, CARD_Y, CARD, CARD, WHITE)
+    qr_card.adjustments[0] = 0.05
+    slide.shapes.add_picture(QR, Emu(CARD_X + PAD), Emu(CARD_Y + PAD),
+                             Emu(CARD - 2 * PAD), Emu(CARD - 2 * PAD))
+    text_box(slide, CARD_X, CARD_Y + CARD + 110000, CARD, 600000,
+             [("Scan to join the Research AI workspace", MUTED)], 14)
+
+    seed_notes(slide, notes_model).text = "\n\n".join(speaker_notes)
+    return slide
+
+
+contact_slide([
+    "Thirty seconds here, in the introduction. The same slide closes the deck, "
+    "so this is the first of two passes and the short one.",
 
     "Email is the one that always works. Say it as well as showing it.",
 
@@ -299,9 +312,22 @@ seed_notes(contact, S(18)).text = "\n\n".join([
     "long enough for the back of the room to focus on a code this size.",
 ])
 
-# add_slide appends, so move it from the end into second place.
+# add_slide appends, so move that first copy from the end into second place.
 slide_ids = prs.slides._sldIdLst
 slide_ids.insert(1, slide_ids[-1])
+
+# The closing copy stays where add_slide puts it, after the questions slide.
+contact_slide([
+    "The second slide again, at the end. The same three routes, now that they "
+    "have a project and a draft of their own to get stuck on.",
+
+    "Leave it up through the questions and while the room clears. This is the "
+    "slide people photograph, and the code needs a few steady seconds.",
+
+    "If the Slack invite has lapsed, the code is dead and the two email "
+    "addresses are the only live routes on the slide. Worth knowing before "
+    "someone tells you in the corridor.",
+])
 
 # python-pptx re-serializes every XML part on save. Keep the source's bytes for
 # every part whose content did not change, so the author's slides carry the

@@ -16,24 +16,28 @@ the text it is about to replace, so the script stops rather than overwrite a
 slide that has moved. Anything edited in the `.pptx` by hand is discarded by a
 rerun, so check which of the two files is newer before running it.
 
-The script adds one slide and removes or moves none. Eighteen of `source.pptx`'s
-parts differ in the output, and five are new: the added slide, its relationships
-and its notes, and the QR image. Every other part keeps `source.pptx`'s bytes,
-so the author's own slides carry their original XML.
+The script adds two slides and removes or moves none. Eighteen of
+`source.pptx`'s parts differ in the output, and nine are new: the two slides,
+their relationships and their notes, and the QR image, which both of them share.
+Every other part keeps `source.pptx`'s bytes, so the author's own slides carry
+their original XML.
 
 ## What the script changes
 
 Slide numbers below are positions in `source.pptx`. The contact slide goes in
-second, so every slide after the title is one higher in the finished deck.
+second, so every slide after the title is one higher in the finished deck; its
+closing copy goes on the end, which shifts nothing.
 
 `source.pptx` describes an earlier shape of the folders: an invented sample
 inside the starter, and no `grantwriting-example` beside it. Most of the edits
 bring the deck in line with the folders as they now are.
 
-- **a new slide, second in the deck:** contact details for the author, how to
-  subscribe to the research-ai mailing list, and a QR code for the Slack
-  workspace. It is shown twice, once during the introduction and again at the
-  end.
+- **a contact slide, twice:** email address, the LISTSERV command that
+  subscribes to research-ai, and a QR code for the Slack workspace. One copy is
+  second in the deck, for the introduction; the other is last, after the
+  questions, to leave up while the room clears. Both are built by the same
+  function and are identical on screen, so the room recognises the second one.
+  Only the speaker notes differ.
 - **8, 19, 20 and 28:** the deck refers to its own slides by number in five
   places, four in speaker notes and one in slide 20's footnote, which the
   audience sees. Each is raised by one to match the finished deck.
@@ -72,9 +76,10 @@ what separates them from the plain orange the slide uses for file names.
 The contact slide sets type at 44pt for the heading, 26pt and 22pt for the two
 text entries, and 16pt and 14pt for the kicker, the three labels and the caption
 under the code. Its boxes carry no shrink-on-overflow, so those are the rendered
-sizes. The QR code was decoded back out of the rendered page at 150 dpi and
-returns the Slack invite URL, which is the check that matters: a code that
-survives PowerPoint but not the projector is no use.
+sizes. Both copies render pixel-identically, and the QR code was decoded back
+out of each rendered page at 150 dpi, returning the Slack invite URL. That is
+the check that matters: a code that survives PowerPoint but not the projector is
+no use.
 
 The same measurement found text below the floors on two of the author's slides,
 which the script does not touch: slide 3 has labels at 10.1-12.4pt and
